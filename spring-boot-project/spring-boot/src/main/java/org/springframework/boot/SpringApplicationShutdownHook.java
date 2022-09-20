@@ -69,6 +69,7 @@ class SpringApplicationShutdownHook implements Runnable {
 	}
 
 	void registerApplicationContext(ConfigurableApplicationContext context) {
+		// 注册钩子 钩子函数是这个类实现Threa的run方法
 		addRuntimeShutdownHookIfNecessary();
 		synchronized (SpringApplicationShutdownHook.class) {
 			assertNotInProgress();

@@ -57,16 +57,26 @@ public enum WebApplicationType {
 
 	private static final String JERSEY_INDICATOR_CLASS = "org.glassfish.jersey.servlet.ServletContainer";
 
+	/**
+	 * 根据当前运行的包位置判断 REACTIVE | SERVLET | NONE
+	 * @return
+	 */
 	static WebApplicationType deduceFromClasspath() {
+		// 存在org.springframework.web.reactive.DispatcherHandler类 and 不存在org.springframework.web.servlet.DispatcherServlet类
+		// and 不存在org.glassfish.jersey.servlet.ServletContainer类
+		// 设置非响应式
 		if (ClassUtils.isPresent(WEBFLUX_INDICATOR_CLASS, null) && !ClassUtils.isPresent(WEBMVC_INDICATOR_CLASS, null)
 				&& !ClassUtils.isPresent(JERSEY_INDICATOR_CLASS, null)) {
 			return WebApplicationType.REACTIVE;
 		}
+		// 不存在jakarta.servlet.Servlet 或者 org.springframework.web.context.ConfigurableWebApplicationContext
+		// 就是设置为None 非web应用程序
 		for (String className : SERVLET_INDICATOR_CLASSES) {
 			if (!ClassUtils.isPresent(className, null)) {
 				return WebApplicationType.NONE;
 			}
 		}
+		// 设置servlet程序
 		return WebApplicationType.SERVLET;
 	}
 

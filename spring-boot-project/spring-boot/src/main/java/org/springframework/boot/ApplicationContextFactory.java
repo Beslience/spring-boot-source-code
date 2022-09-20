@@ -44,8 +44,12 @@ public interface ApplicationContextFactory {
 	 */
 	ApplicationContextFactory DEFAULT = (webApplicationType) -> {
 		try {
+			// 获取实现ApplicationContextFactory的类列表
+			// 有: ReactiveWebServerApplicationContextFactory、 ServletWebServerApplicationContextFactory
+			// 根据webApplicationType进行选择
 			for (ApplicationContextFactory candidate : SpringFactoriesLoader
 					.loadFactories(ApplicationContextFactory.class, ApplicationContextFactory.class.getClassLoader())) {
+				// 创建
 				ConfigurableApplicationContext context = candidate.create(webApplicationType);
 				if (context != null) {
 					return context;
