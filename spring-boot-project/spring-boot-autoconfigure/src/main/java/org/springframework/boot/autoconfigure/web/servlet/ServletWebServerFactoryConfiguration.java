@@ -67,6 +67,10 @@ class ServletWebServerFactoryConfiguration {
 	@ConditionalOnMissingBean(value = ServletWebServerFactory.class, search = SearchStrategy.CURRENT)
 	static class EmbeddedTomcat {
 
+		/**
+		 * 向Spring容器注入 TomcatServletWebServerFactory(Tomcat启动的关键类, 创建TomcatWebServer)
+		 * Spring boot容器启动过程中, 在创建容器之后, 会执行刷新容器的操作refresh(): spring容器的启动方法, 将会加载bean以及各种配置
+		 */
 		@Bean
 		TomcatServletWebServerFactory tomcatServletWebServerFactory(
 				ObjectProvider<TomcatConnectorCustomizer> connectorCustomizers,

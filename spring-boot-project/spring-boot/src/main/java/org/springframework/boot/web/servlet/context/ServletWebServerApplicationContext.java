@@ -142,7 +142,9 @@ public class ServletWebServerApplicationContext extends GenericWebApplicationCon
 
 	@Override
 	public final void refresh() throws BeansException, IllegalStateException {
+		// SpringBoot的容器调用这个类
 		try {
+			// spring容器的
 			super.refresh();
 		}
 		catch (RuntimeException ex) {
@@ -156,9 +158,13 @@ public class ServletWebServerApplicationContext extends GenericWebApplicationCon
 
 	@Override
 	protected void onRefresh() {
+		// 调用父类的逻辑
 		super.onRefresh();
 		try {
+			// 关键方法, 创建webserver
 			createWebServer();
+			// 继续执行Spring的逻辑, 初始化bean实例 , Spring容器初始化完毕后
+			// 调用 WebServerStartStopLifecycle 的start 对TomcatWebServer 进行启动
 		}
 		catch (Throwable ex) {
 			throw new ApplicationContextException("Unable to start web server", ex);
@@ -174,16 +180,27 @@ public class ServletWebServerApplicationContext extends GenericWebApplicationCon
 	}
 
 	private void createWebServer() {
+		// 通过之前配置的 ServletWebServerFactory 获取webServer, 即创建web服务器
 		WebServer webServer = this.webServer;
+		// servlet上下文 默认是空
 		ServletContext servletContext = getServletContext();
 		if (webServer == null && servletContext == null) {
 			StartupStep createWebServer = this.getApplicationStartup().start("spring.boot.webserver.create");
+			// 获取web服务工厂 默认是TomcatServletWebServerFactory
 			ServletWebServerFactory factory = getWebServerFactory();
 			createWebServer.tag("factory", factory.getClass().toString());
+			// 通过web服务工厂获取web服务
+			// 创建内嵌的Tomcat并启动
 			this.webServer = factory.getWebServer(getSelfInitializer());
 			createWebServer.end();
+			// 注册 WebServerGracefulShutdownLifecycle 的实例到容器中
+			// ReactiveWebServerApplicationContext 容器启动完毕后会调用该实例的start
+			// ReactiveWebServerApplicationContext 容器销毁完毕后会调用该实例的stop
 			getBeanFactory().registerSingleton("webServerGracefulShutdown",
 					new WebServerGracefulShutdownLifecycle(this.webServer));
+			// 注册 WebServerStartStopLifecycle 的实例到容器中
+			// ServletWebServerApplicationContext 容器启动完毕后会调用该实例的start尝试启动webServer并发送事件
+			// ServletWebServerApplicationContext 容器销毁完毕后会调用该实例的stop 销毁webServer
 			getBeanFactory().registerSingleton("webServerStartStop",
 					new WebServerStartStopLifecycle(this, this.webServer));
 		}
@@ -195,6 +212,7 @@ public class ServletWebServerApplicationContext extends GenericWebApplicationCon
 				throw new ApplicationContextException("Cannot initialize servlet context", ex);
 			}
 		}
+		// 初始化ConfigurableWebEnvironment 类的配置数据源
 		initPropertySources();
 	}
 
@@ -206,7 +224,10 @@ public class ServletWebServerApplicationContext extends GenericWebApplicationCon
 	 */
 	protected ServletWebServerFactory getWebServerFactory() {
 		// Use bean names so that we don't consider the hierarchy
+		// 从容器搜欧索ServletWebServerFactory 类型的beanNames数组
+		// ServletWebServerFactoryConfiguration 就会向容器注入 ServletWebServerFactory 的bean
 		String[] beanNames = getBeanFactory().getBeanNamesForType(ServletWebServerFactory.class);
+		// 找不到
 		if (beanNames.length == 0) {
 			throw new MissingWebServerFactoryBeanException(getClass(), ServletWebServerFactory.class,
 					WebApplicationType.SERVLET);

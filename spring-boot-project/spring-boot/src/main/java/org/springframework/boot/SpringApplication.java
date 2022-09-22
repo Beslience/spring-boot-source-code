@@ -869,6 +869,7 @@ public class SpringApplication {
 	 * @param applicationContext the application context to refresh
 	 */
 	protected void refresh(ConfigurableApplicationContext applicationContext) {
+		// Spring容器的refresh
 		applicationContext.refresh();
 	}
 
