@@ -60,6 +60,10 @@ import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
 
 /**
+ * 借助 SpringFactoriesLoader 工具类获取所有引入的jar包中和当前类路径下的META-INF/spring.factories
+ * spring.factories 文件必须是 Properties 格式, key是接口或抽象类的包名+类名, value是逗号分割的实现类名称列表
+ * SpringFactoriesLoader 会将文件的自动配置类以及工厂类加载到 Spring容器中, 从而实现自动加载
+ *
  * {@link DeferredImportSelector} to handle {@link EnableAutoConfiguration
  * auto-configuration}. This class can also be subclassed if a custom variant of
  * {@link EnableAutoConfiguration @EnableAutoConfiguration} is needed.

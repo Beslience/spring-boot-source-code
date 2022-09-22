@@ -81,8 +81,27 @@ import org.springframework.core.io.support.SpringFactoriesLoader;
 @Documented
 @Inherited
 @AutoConfigurationPackage
+// 借助 @Import 注解引用的 AutoConfigurationImportSelector 类来完成功能
 @Import(AutoConfigurationImportSelector.class)
 public @interface EnableAutoConfiguration {
+
+	// 检查符合规则的自动配置类加载到Spring 容器中
+	// 将会检查类上的 Conditional 系列注解
+	// @ConditionalOnClass             类路径存在指定的类时生效
+	// @ConditionalOnExpression        SpEL表达式结果为true时生效
+	// @ConditionalOnJava              指定的Java版本存在时生效
+	// @ConditionalOnJndi              指定的Jndi存在时生效
+	// @ConditionalOnMissingClass      容器里不存在指定类型的类时生效
+	// @ConditionalOnWebApplication    当前项目是Web项目时生效
+	// @ConditionalOnNotWebApplication 当前项目不是Web项目时生效
+	// @ConditionalOnBean              容器里存在指定类型的bean时生效
+	// @ConditionalOnMissingBean       容器里不存在指定类型的bean时生效
+	// @ConditionalOnResource          容器里存在指定 resource 时生效
+	// @ConditionalOnSingleCandidate   容器里指定类型的Bean 只有一个或者指定了一个首选Bean @Primary 时生效
+	// 只有符合规则的自动配置类才会注册到容器中
+	//
+	// 这些自动配置类基本都是使用 @Configuration 注解标注, 并且其内部有一系列的 @Bean 方法或者同样被 @Configuration 注解标注的内部类
+	// 当这些自动配置被加载到容器中之后, 内部的Bean或者内部类将会被解析
 
 	/**
 	 * Environment property that can be used to override when auto-configuration is
@@ -91,12 +110,14 @@ public @interface EnableAutoConfiguration {
 	String ENABLED_OVERRIDE_PROPERTY = "spring.boot.enableautoconfiguration";
 
 	/**
+	 * 指定排除某些自动配置类的注册 这些不会自动注册某些配置
 	 * Exclude specific auto-configuration classes such that they will never be applied.
 	 * @return the classes to exclude
 	 */
 	Class<?>[] exclude() default {};
 
 	/**
+	 * 指定排除某些自动配置类的注册 这些不会自动注册某些配置
 	 * Exclude specific auto-configuration class names such that they will never be
 	 * applied.
 	 * @return the class names to exclude

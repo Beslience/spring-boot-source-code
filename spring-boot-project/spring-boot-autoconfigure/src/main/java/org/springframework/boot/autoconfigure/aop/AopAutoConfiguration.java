@@ -44,11 +44,11 @@ import org.springframework.context.annotation.EnableAspectJAutoProxy;
  * @see EnableAspectJAutoProxy
  */
 @AutoConfiguration
-@ConditionalOnProperty(prefix = "spring.aop", name = "auto", havingValue = "true", matchIfMissing = true)
+@ConditionalOnProperty(prefix = "spring.aop", name = "auto", havingValue = "true", matchIfMissing = true) // 指定的属性值和预期值一致时生效
 public class AopAutoConfiguration {
 
 	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnClass(Advice.class)
+	@ConditionalOnClass(Advice.class) // 类路径存在指定的类时生效
 	static class AspectJAutoProxyingConfiguration {
 
 		@Configuration(proxyBeanMethods = false)

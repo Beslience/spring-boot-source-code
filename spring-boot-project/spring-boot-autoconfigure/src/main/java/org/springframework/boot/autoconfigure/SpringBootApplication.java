@@ -52,8 +52,15 @@ import org.springframework.data.repository.Repository;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Inherited
+// 组合注解: @ComponentScan、@SpringBootConfiguration、@EnableAutoConfiguration
+// 用于声明当前类是一个Spring Boot配置类, 具有和 @Configuration 注解同样的作用
 @SpringBootConfiguration
+// 声明在程序启动时, 将会自动加载Spring Boot默认的配置。这是实现自动配置的关键注解
 @EnableAutoConfiguration
+// 用于扫描指定包及子包路径, 并将符合条件的组件类注册到Spring容器中.
+// 默认包路径是 @ComponentScan 所在包及其子包
+// 默认过滤条件是 如果类上具有包括@Component、@Service、@Repository、@Controller、@Configuration 等注解, 那么该类作为组件类而被注册到容器中, 也可以通过指定
+// includeFilters、excludeFilters 属性来自定义条件
 @ComponentScan(excludeFilters = { @Filter(type = FilterType.CUSTOM, classes = TypeExcludeFilter.class),
 		@Filter(type = FilterType.CUSTOM, classes = AutoConfigurationExcludeFilter.class) })
 public @interface SpringBootApplication {
